@@ -37,6 +37,23 @@ ninja --version
 
 **Dependências do projecto:** JUCE e Catch2 vêm pelo **CMake `FetchContent`** (rede na primeira configuração); **não** é necessário vcpkg nem submódulo para esse passo.
 
+### O que costuma faltar no Windows
+
+1. **`cmake -G "Visual Studio 17 2022"` falha** com “could not find any instance of Visual Studio”, mesmo tendo a pasta `Community` — o **Visual Studio Installer** por vezes não regista a instalação (cópia manual, *drive* mudado, etc.). **Reparação:** abre o *Visual Studio Installer* → **Modify** na tua instalação → garante a carga **“Desktop development with C++”** (MSVC + Windows SDK). Depois volta a correr o CMake.  
+2. **Ninja + terminal normal** — o `cl.exe` não está no `PATH` até carregares o ambiente MSVC. Usa um dos caminhos abaixo.  
+3. **Pasta `build/` a meio** — se mudaste de gerador ou a configuração falhou a meio, apaga `build/` e volta a configurar (`rmdir /s /q build` no *cmd*).
+
+### Atalho: scripts (MSVC + Ninja)
+
+Na raiz do repo, no **cmd.exe** (duplo clique ou terminal):
+
+```bat
+scripts\configure-ninja.bat
+scripts\build-debug.bat
+```
+
+Isto chama `VsDevCmd.bat` (ou localiza a instalação com `vswhere` quando disponível), mete o **Ninja** do `winget` no `PATH`, e corre o CMake em modo **Ninja** + **Debug**.
+
 ## Configurar e compilar
 
 Na raiz do repositório:
@@ -52,6 +69,8 @@ Com Ninja (um gerador por configuração):
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 cmake --build build
 ```
+
+No Windows, o comando acima só funciona no **“x64 Native Tools Command Prompt for VS 2022”** (ou depois de `VsDevCmd.bat`), salvo se usares os `scripts\` acima.
 
 ### Versão do JUCE
 
