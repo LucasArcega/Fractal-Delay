@@ -1,0 +1,68 @@
+# Build + test on every push/PR. clang-tidy uses compile_commands.json from the same configure.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test-lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install toolchain and JUCE Linux deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            ninja-build \
+            pkg-config \
+            clang-tidy \
+            xvfb \
+            libasound2-dev \
+            libjack-jackd2-dev \
+            ladspa-sdk \
+            libcurl4-openssl-dev \
+            libfreetype6-dev \
+            libfontconfig1-dev \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libx11-dev \
+            libxcomposite-dev \
+            libxcursor-dev \
+            libxext-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxrandr-dev
+
+      - name: Cache FetchContent deps
+        uses: actions/cache@v4
+        with:
+          path: build/_deps
+          key: ${{ runner.os }}-fetchcontent-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-fetchcontent-
+
+      - name: CMake configure
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DFRACTAL_DELAY_CTEST_INCLUDE_GUI=ON
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: CTest
+        run: xvfb-run -a ctest --test-dir build --output-on-failure
+
+      - name: clang-tidy (translation units)
+        run: |
+          clang-tidy -p build --quiet Source/PluginProcessor.cpp
+          clang-tidy -p build --quiet Source/PluginEditor.cpp
+          clang-tidy -p build --quiet Tests/FractalDelayTests.cpp

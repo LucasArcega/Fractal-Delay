@@ -19,6 +19,12 @@ if not defined VSDEV (
 call "%VSDEV%" -arch=x64 -host_arch=x64
 if errorlevel 1 exit /b 1
 
+rem Without this, cmake --build from PowerShell finds cl.exe but Catch2/JUCE fail on #include <vector>.
+if not defined INCLUDE (
+  echo ERROR: INCLUDE is empty after VsDevCmd. MSVC workload "Desktop development with C++" may be missing.
+  exit /b 1
+)
+
 rem Ninja from winget lives under a versioned folder; prepend any matching package dir.
 for /d %%d in ("%LOCALAPPDATA%\Microsoft\WinGet\Packages\Ninja-build.Ninja_*") do set "PATH=%%d;%PATH%"
 

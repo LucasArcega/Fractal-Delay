@@ -45,16 +45,24 @@ ninja --version
 
 ### Atalho: scripts (MSVC + Ninja)
 
-Na raiz do repo, no **cmd.exe** (duplo clique ou terminal):
+Fluxo **único** no Windows (ambiente VS + configure **Debug** + Ninja + flags do projecto + build + `ctest` com testes de GUI incluídos):
+
+```bat
+scripts\all-debug.bat
+```
+
+Isto chama `VsDevCmd.bat` (ou `vswhere`), mete o **Ninja** do `winget` no `PATH`, e corre **configure → build → ctest**. As opções de cache partilhadas (ex. testes Catch2 **`[gui]`** no `ctest`) estão em `scripts\cmake-debug-cache-flags.bat` — um sítio só para não duplicar linhas de `cmake`.
+
+Para **só** reconfigurar ou **só** compilar (depois de já teres feito configure pelo menos uma vez):
 
 ```bat
 scripts\configure-ninja.bat
 scripts\build-debug.bat
 ```
 
-Isto chama `VsDevCmd.bat` (ou localiza a instalação com `vswhere` quando disponível), mete o **Ninja** do `winget` no `PATH`, e corre o CMake em modo **Ninja** + **Debug**.
+O `configure-ninja.bat` usa as **mesmas** flags que o `all-debug.bat`.
 
-## Configurar e compilar
+## Configurar e compilar (manual / outros SO)
 
 Na raiz do repositório:
 
@@ -72,6 +80,8 @@ cmake --build build
 
 No Windows, o comando acima só funciona no **“x64 Native Tools Command Prompt for VS 2022”** (ou depois de `VsDevCmd.bat`), salvo se usares os `scripts\` acima.
 
+**Nota:** `cmake` “nu” na shell **não** aplica as mesmas opções que os `scripts\` (ver `scripts\cmake-debug-cache-flags.bat`). Para alinhar com o CI / `all-debug`, passa por exemplo `-DFRACTAL_DELAY_CTEST_INCLUDE_GUI=ON` ao configurar.
+
 ### Versão do JUCE
 
 O *tag* Git do JUCE é a variável de cache `JUCE_TAG` (por omissão `8.0.12`). Para fixar outra versão:
@@ -82,14 +92,12 @@ cmake -B build -DJUCE_TAG=8.0.4
 
 ## Testes
 
-```bash
-ctest --test-dir build --output-on-failure
-```
-
-Ou executar diretamente o binário `FractalDelay_Tests` na pasta de build.
+- **Windows (recomendado):** `scripts\all-debug.bat` já corre **`ctest`** no fim (com testes **`[gui]`** activos via cache do configure).
+- **Manual:** `ctest --test-dir build --output-on-failure` (o binário está em `build/`, nome `FractalDelay_Tests.exe` no Windows).
+- **Linux** sem ecrã: `xvfb-run -a ctest --test-dir build --output-on-failure` (como no CI). Só o teste de GUI: `FractalDelay_Tests "[gui]"`.
 
 ## Executar sem DAW
 
 Depois do build, o alvo **Standalone** gera uma aplicação (por exemplo `FractalDelay_artefacts/Debug/Standalone/Fractal Delay.exe` no Windows, caminhos exactos dependem do gerador). Use-a para validar áudio e MIDI sem abrir uma DAW.
 
-O **VST3** é copiado para a pasta de *plugins* do utilizador quando `COPY_PLUGIN_AFTER_BUILD` está activo (definido no `CMakeLists.txt`).
+O **VST3** fica em `build/…/FractalDelay_artefacts/…/VST3/` após o build. Para copiar automaticamente para a pasta do sistema (ex.: `Common Files\VST3` no Windows, muitas vezes exige *admin*), configura com `-DFRACTAL_DELAY_COPY_PLUGIN_AFTER_BUILD=ON`.
