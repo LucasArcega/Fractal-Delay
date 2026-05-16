@@ -1,57 +1,129 @@
 #include "PluginEditor.h"
 
+namespace
+{
+    void applyMonoSliderStyle(juce::Slider& s)
+    {
+        s.setSliderStyle(juce::Slider::LinearVertical);
+        s.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 22);
+        s.setColour(juce::Slider::backgroundColourId, juce::Colour(0xff333333));
+        s.setColour(juce::Slider::trackColourId, juce::Colour(0xffffffff));
+        s.setColour(juce::Slider::thumbColourId, juce::Colour(0xffaaaaaa));
+        s.setColour(juce::Slider::textBoxTextColourId, juce::Colours::white);
+        s.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff1a1a1a));
+        s.setColour(juce::Slider::textBoxOutlineColourId, juce::Colours::transparentBlack);
+    }
+
+    void styleSmallTitle(juce::Label& l, const juce::String& text)
+    {
+        l.setText(text, juce::dontSendNotification);
+        l.setJustificationType(juce::Justification::centred);
+        l.setFont(juce::Font(juce::FontOptions(14.f)).boldened());
+        l.setColour(juce::Label::textColourId, juce::Colours::white);
+    }
+
+    void stylePeakLabel(juce::Label& l, const juce::String& initial)
+    {
+        l.setText(initial, juce::dontSendNotification);
+        l.setJustificationType(juce::Justification::centred);
+        l.setFont(juce::Font(juce::FontOptions(12.f)));
+        l.setColour(juce::Label::textColourId, juce::Colour(0xffaaaaaa));
+    }
+
+    /** Coluna IN/OUT: título, medidor, slider (altura flex, mínimo fixo). */
+    void layoutSideStrip(juce::Component& column,
+                         juce::Label& title,
+                         juce::Label& peak,
+                         juce::Slider& slider)
+    {
+        auto r = column.getLocalBounds().toFloat();
+        juce::FlexBox fb;
+        fb.flexDirection = juce::FlexBox::Direction::column;
+        fb.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+        fb.alignItems     = juce::FlexBox::AlignItems::stretch;
+
+        constexpr float titleH = 20.f;
+        constexpr float peakH  = 22.f;
+        constexpr float sliderMinH = 120.f;
+
+        fb.items.add(juce::FlexItem(title).withHeight(titleH));
+        fb.items.add(juce::FlexItem(peak).withHeight(peakH));
+        fb.items.add(juce::FlexItem(slider).withFlex(1.f).withMinHeight(sliderMinH).withMaxWidth((float) column.getWidth()));
+
+        fb.performLayout(r);
+    }
+
+    /** Coluna central: título + dica (placeholder até haver parâmetros de delay). */
+    void layoutCenterStrip(juce::Component& column, juce::Label& title, juce::Label& hint)
+    {
+        auto r = column.getLocalBounds().toFloat();
+        juce::FlexBox fb;
+        fb.flexDirection = juce::FlexBox::Direction::column;
+        fb.justifyContent = juce::FlexBox::JustifyContent::center;
+        fb.alignItems     = juce::FlexBox::AlignItems::stretch;
+
+        fb.items.add(juce::FlexItem(title).withHeight(22.f));
+        fb.items.add(juce::FlexItem(hint).withFlex(1.f).withMinHeight(40.f));
+
+        fb.performLayout(r);
+    }
+} // namespace
+
 FractalDelayAudioProcessorEditor::FractalDelayAudioProcessorEditor(FractalDelayAudioProcessor& p)
     : AudioProcessorEditor(&p)
     , audioProcessor(p)
 {
-    // Define tamanho da janela
-    setSize(460, 320);
+    // Janela um pouco mais larga para 3 colunas (Grid + FlexBox)
+    setSize(640, 360);
 
-    // Define estilo do slider de entrada
-    inputSlider.setSliderStyle(juce::Slider::LinearVertical);
-    inputSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 22);
+    headerLabel.setText("Fractal Delay", juce::dontSendNotification);
+    headerLabel.setJustificationType(juce::Justification::centredLeft);
+    headerLabel.setFont(juce::Font(juce::FontOptions(18.f)).boldened());
+    headerLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    addAndMakeVisible(headerLabel);
 
-    // Track não preenchido (fundo): cinza escuro
-    inputSlider.setColour(juce::Slider::backgroundColourId,    juce::Colour(0xff333333));
-    // Track preenchido (de baixo até ao thumb): branco
-    inputSlider.setColour(juce::Slider::trackColourId,         juce::Colour(0xffffffff));
-    
-    // Thumb: cinza claro
-    inputSlider.setColour(juce::Slider::thumbColourId,         juce::Colour(0xffaaaaaa));
-    
-    // Caixa de texto abaixo do slider
-    inputSlider.setColour(juce::Slider::textBoxTextColourId,       juce::Colours::white);
-    inputSlider.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff1a1a1a));
-    inputSlider.setColour(juce::Slider::textBoxOutlineColourId,    juce::Colours::transparentBlack);
-    addAndMakeVisible(inputSlider);
+    footerLabel.setText(juce::String(JucePlugin_VersionString), juce::dontSendNotification);
+    footerLabel.setJustificationType(juce::Justification::centred);
+    footerLabel.setFont(juce::Font(juce::FontOptions(11.f)));
+    footerLabel.setColour(juce::Label::textColourId, juce::Colour(0xff6b7280));
+    addAndMakeVisible(footerLabel);
 
-    // Define estilo do slider de saída
+    addAndMakeVisible(inColumn);
+    addAndMakeVisible(centerColumn);
+    addAndMakeVisible(outColumn);
 
-    outputSlider.setColour(juce::Slider::backgroundColourId, juce::Colour(0xff333333));
-    outputSlider.setColour(juce::Slider::trackColourId,         juce::Colour(0xffffffff));
-    outputSlider.setColour(juce::Slider::thumbColourId,         juce::Colour(0xffaaaaaa));
-    outputSlider.setColour(juce::Slider::textBoxTextColourId,       juce::Colours::white);
-    outputSlider.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff1a1a1a));
-    outputSlider.setColour(juce::Slider::textBoxOutlineColourId,    juce::Colours::transparentBlack);
-    outputSlider.setSliderStyle(juce::Slider::LinearVertical);
-    outputSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 22);
-    addAndMakeVisible(outputSlider);
+    styleSmallTitle(inTitle, "IN");
+    stylePeakLabel(inLabel, "IN: ---");
+    applyMonoSliderStyle(inputSlider);
+    inColumn.addAndMakeVisible(inTitle);
+    inColumn.addAndMakeVisible(inLabel);
+    inColumn.addAndMakeVisible(inputSlider);
 
-    // Define attachment dos sliders
-    inputAttachment  = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), "inputGainDb",  inputSlider);
+    styleSmallTitle(outTitle, "OUT");
+    stylePeakLabel(outLabel, "OUT: ---");
+    applyMonoSliderStyle(outputSlider);
+    outColumn.addAndMakeVisible(outTitle);
+    outColumn.addAndMakeVisible(outLabel);
+    outColumn.addAndMakeVisible(outputSlider);
+
+    delayTitle.setText("Delay", juce::dontSendNotification);
+    delayTitle.setJustificationType(juce::Justification::centred);
+    delayTitle.setFont(juce::Font(juce::FontOptions(15.f)).boldened());
+    delayTitle.setColour(juce::Label::textColourId, juce::Colours::white);
+
+    delayHint.setText(
+        juce::translate("Time, feedback, mix and damping will live here."),
+        juce::dontSendNotification);
+    delayHint.setJustificationType(juce::Justification::centred);
+    delayHint.setFont(juce::Font(juce::FontOptions(12.f)));
+    delayHint.setColour(juce::Label::textColourId, juce::Colour(0xff9aa7b8));
+    centerColumn.addAndMakeVisible(delayTitle);
+    centerColumn.addAndMakeVisible(delayHint);
+
+    inputAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), "inputGainDb", inputSlider);
     outputAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), "outputGainDb", outputSlider);
-
-    // Define estilo do label de entrada
-    inLabel.setText("IN: ---", juce::dontSendNotification);
-    inLabel.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(inLabel);
-
-    // Define estilo do label de saída
-    outLabel.setText("OUT: ---", juce::dontSendNotification);
-    outLabel.setJustificationType(juce::Justification::centred);
-    addAndMakeVisible(outLabel);
 
     idleTimer = std::make_unique<IdleTimer>(this);
     idleTimer->startTimer(1000 / 30);
@@ -87,11 +159,12 @@ void FractalDelayAudioProcessorEditor::idle()
     {
         auto toDb = [](float linear) -> juce::String
         {
-            if (linear < 1e-6f) return "-inf dB";
+            if (linear < 1e-6f)
+                return "-inf dB";
             return juce::String(juce::Decibels::gainToDecibels(linear), 1) + " dB";
         };
 
-        inLabel.setText("IN: "  + toDb(currentPeakIn),  juce::dontSendNotification);
+        inLabel.setText("IN: " + toDb(currentPeakIn), juce::dontSendNotification);
         outLabel.setText("OUT: " + toDb(currentPeakOut), juce::dontSendNotification);
     }
 }
@@ -103,18 +176,30 @@ void FractalDelayAudioProcessorEditor::paint(juce::Graphics& g)
 
 void FractalDelayAudioProcessorEditor::resized()
 {
-    // Altura fixa para os sliders — não crescem com a janela
-    constexpr int labelH  = 24;
-    constexpr int sliderH = 200;
+    const auto bounds = getLocalBounds().reduced(14);
 
-    auto area = getLocalBounds().reduced(20);
+    juce::Grid grid;
+    using Track = juce::Grid::TrackInfo;
+    using Fr    = juce::Grid::Fr;
+    using Px    = juce::Grid::Px;
 
-    auto left  = area.removeFromLeft(area.getWidth() / 2).reduced(10, 0);
-    auto right = area.reduced(10, 0);
+    grid.templateRows = { Track(Px(28)), Track(Fr(1)), Track(Px(22)) };
+    // Centro um pouco mais largo (100 : 145 : 100 ≈ 1 : 1.45 : 1)
+    grid.templateColumns = { Track(Fr(100)), Track(Fr(145)), Track(Fr(100)) };
+    grid.rowGap    = Px(8);
+    grid.columnGap = Px(10);
 
-    inLabel.setBounds(left.removeFromTop(labelH));
-    inputSlider.setBounds(left.removeFromTop(sliderH));
+    grid.items = {
+        juce::GridItem(headerLabel).withArea(1, 1, 1, 3),
+        juce::GridItem(inColumn).withArea(2, 1),
+        juce::GridItem(centerColumn).withArea(2, 2),
+        juce::GridItem(outColumn).withArea(2, 3),
+        juce::GridItem(footerLabel).withArea(3, 1, 3, 3),
+    };
 
-    outLabel.setBounds(right.removeFromTop(labelH));
-    outputSlider.setBounds(right.removeFromTop(sliderH));
+    grid.performLayout(bounds);
+
+    layoutSideStrip(inColumn, inTitle, inLabel, inputSlider);
+    layoutCenterStrip(centerColumn, delayTitle, delayHint);
+    layoutSideStrip(outColumn, outTitle, outLabel, outputSlider);
 }

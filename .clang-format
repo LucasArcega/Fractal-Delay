@@ -1,2 +1,5 @@
 BasedOnStyle: Microsoft
 ColumnLimit: 120
+
+# Conteúdo dentro de namespace { ... } indentado (inclui namespace anónimo)
+NamespaceIndentation: All

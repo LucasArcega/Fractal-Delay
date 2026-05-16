@@ -1,5 +1,7 @@
 #pragma once
+
 #include <JuceHeader.h>
+
 #include "PluginProcessor.h"
 
 class FractalDelayAudioProcessorEditor : public juce::AudioProcessorEditor
@@ -20,16 +22,29 @@ public:
         FractalDelayAudioProcessorEditor* ed;
     };
 
-// Variáveis de instância
 private:
     FractalDelayAudioProcessor& audioProcessor;
 
     std::unique_ptr<IdleTimer> idleTimer;
 
-    juce::Label inLabel;
-    juce::Label outLabel;
+    // --- Grid macro: header | 3 colunas | footer ---
+    juce::Label headerLabel;
+    juce::Label footerLabel;
 
+    // Colunas (containers para FlexBox interno)
+    juce::Component inColumn;
+    juce::Component centerColumn;
+    juce::Component outColumn;
+
+    juce::Label inTitle;
+    juce::Label inLabel;
     juce::Slider inputSlider;
+
+    juce::Label delayTitle;
+    juce::Label delayHint;
+
+    juce::Label outTitle;
+    juce::Label outLabel;
     juce::Slider outputSlider;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> inputAttachment;

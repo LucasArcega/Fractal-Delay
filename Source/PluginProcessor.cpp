@@ -1,6 +1,11 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+namespace
+{
+constexpr float silenceDb = -80.f;
+} // namespace
+
 juce::AudioProcessorValueTreeState::ParameterLayout FractalDelayAudioProcessor::createParameterLayout()
 {
     // Converte valor dB para texto exibido no slider e no host
