@@ -23,6 +23,10 @@ Mostrar ao utilizador **energia por banda** e/ou **redução de ganho aplicada**
 - **Unitário:** fila de amostras de níveis → componente agrega sem *crash* (teste de *headless* com *dummy* lookandfeel se viável).
 - **Manual:** verificar *frame rate* com buffer 512 @ 48 kHz.
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md). Para visualização em tempo real, alinhar com o padrão de fila + *throttling* já usado no plugin.
+
 ## Próxima fase ClickUp
 
 [Fase 5 — Post-FX e Spatial](../fase-5-post-fx-spatial/)

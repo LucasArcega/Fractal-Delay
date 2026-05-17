@@ -26,25 +26,38 @@ Ter um *plugin* de áudio (formato alvo: VST3 e, opcionalmente, AU no macOS / St
 ```
 fractal-delay/
   CMakeLists.txt
+  .clang-format
+  .gitattributes
   Source/
     PluginProcessor.h / .cpp
     PluginEditor.h   / .cpp
+    Components/       # widgets reutilizáveis (namespace GUI)
   Tests/
-    Main.cpp
-    ...
-  third_party/ ou modules/
+    FractalDelayTests.cpp
+  scripts/            # configure-ninja, all-debug, flags de cache CMake
   Plans/
     README.md
+    00-convencoes-repo-ui-testes.md
+    00-testes-unitarios-visao-geral.md
     fase-1-motor-delay-basico/
     ...
 ```
 
+### Estado actual (além do esqueleto)
+
+- **JUCE** via `FetchContent` com *tag* fixa (`JUCE_TAG` no `CMakeLists.txt`).
+- **Formatos**: VST3 + Standalone; `COPY_PLUGIN_AFTER_BUILD` **OFF** por defeito.
+- **APVTS**: parâmetros `inputGainDb` / `outputGainDb` com conversão texto↔valor segura.
+- **Áudio → UI**: fila *lock-free* (`AbstractFifo`) + `IdleTimer` no editor (padrão tipo [airwindows/Meter](https://github.com/airwindows/Meter)); picos de saída **L/R** para o rodapé.
+- **UI**: `Grid` (3 linhas × 3 colunas na zona principal) + `FlexBox` dentro das colunas IN / centro / OUT; `GUI::FooterBar` + `GUI::HorizontalMetter`.
+- **Testes**: `FractalDelay_Tests` + flags documentadas em [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ### 2. `CMakeLists.txt` (nível raiz)
 
 - `cmake_minimum_required` compatível com a *toolchain*.
-- Incluir JUCE: **submódulo Git** `https://github.com/juce-framework/JUCE` com *tag* fixa, ou **CPM.cmake** / `FetchContent` com `GIT_TAG`.
-- `juce_add_plugin` com `PLUGIN_MANUFACTURER_CODE`, `PLUGIN_CODE` únicos; `COPY_PLUGIN_AFTER_BUILD TRUE`; `FORMATS` (ex.: `VST3 Standalone`).
-- `target_sources` para `PluginProcessor` / `PluginEditor`.
+- Incluir JUCE: **submódulo Git** `https://github.com/juce-framework/JUCE` com *tag* fixa, ou **`FetchContent`** com `GIT_TAG` (é o que o repo usa).
+- `juce_add_plugin` com `PLUGIN_MANUFACTURER_CODE`, `PLUGIN_CODE` únicos; `COPY_PLUGIN_AFTER_BUILD` **OFF** por defeito (evitar cópia para `Program Files` sem admin); `FORMATS` (ex.: `VST3 Standalone`).
+- `target_sources`: `PluginProcessor` / `PluginEditor` + ficheiros em `Source/Components/` (ex.: `FooterBar.cpp`, `HorizontalMetter.cpp`).
 - Linkar módulos JUCE mínimos; incluir `juce_dsp` quando o DSP desta fase for integrado.
 
 ### 3. `AudioProcessor` esqueleto
@@ -52,9 +65,10 @@ fractal-delay/
 - Stubs: `prepareToPlay`, `releaseResources`, `processBlock`, `createEditor`; parâmetros placeholder se útil.
 - `isBusesLayoutSupported`: layouts suportados explícitos.
 
-### 4. `AudioProcessorEditor` mínimo
+### 4. `AudioProcessorEditor`
 
-- Janela mínima ou `GenericAudioProcessorEditor` até concluir [`05-ui-parametros-motor-delay-basico.md`](05-ui-parametros-motor-delay-basico.md).
+- Janela com **Grid** (cabeçalho / corpo / rodapé) e **FlexBox** nas colunas; componentes em `Source/Components/` no namespace **`GUI`**.
+- Ver detalhes em [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md) e [`05-ui-parametros-motor-delay-basico.md`](05-ui-parametros-motor-delay-basico.md).
 
 ### 5. CI
 

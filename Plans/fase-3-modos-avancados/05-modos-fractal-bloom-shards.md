@@ -26,6 +26,10 @@ Três variantes de **multi-tap / recursão espectral temporal** (nomes de market
 | `EnergyBound` | Resposta a impulso com *feedback* unitário limitada. |
 | `DeterministicShards` | Modo *Shards* com *seed* fixa → saída binária comparável (*golden* file curto). |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próxima fase ClickUp
 
 [Fase 4 — Spectral Ducking](../fase-4-spectral-ducking/)

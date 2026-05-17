@@ -82,11 +82,7 @@ FractalDelayAudioProcessorEditor::FractalDelayAudioProcessorEditor(FractalDelayA
     headerLabel.setColour(juce::Label::textColourId, juce::Colours::white);
     addAndMakeVisible(headerLabel);
 
-    footerLabel.setText(juce::String(JucePlugin_VersionString), juce::dontSendNotification);
-    footerLabel.setJustificationType(juce::Justification::centred);
-    footerLabel.setFont(juce::Font(juce::FontOptions(11.f)));
-    footerLabel.setColour(juce::Label::textColourId, juce::Colour(0xff6b7280));
-    addAndMakeVisible(footerLabel);
+    addAndMakeVisible(footerBar);
 
     addAndMakeVisible(inColumn);
     addAndMakeVisible(centerColumn);
@@ -149,6 +145,12 @@ void FractalDelayAudioProcessorEditor::idle()
             case FractalDelayAudioProcessor::AudioToUIMessage::PEAK_OUT:
                 currentPeakOut = msg.newValue;
                 break;
+            case FractalDelayAudioProcessor::AudioToUIMessage::PEAK_OUT_LEFT:
+                currentPeakOutLeft = msg.newValue;
+                break;
+            case FractalDelayAudioProcessor::AudioToUIMessage::PEAK_OUT_RIGHT:
+                currentPeakOutRight = msg.newValue;
+                break;
             case FractalDelayAudioProcessor::AudioToUIMessage::INCREMENT:
                 needsRepaint = true;
                 break;
@@ -166,24 +168,48 @@ void FractalDelayAudioProcessorEditor::idle()
 
         inLabel.setText("IN: " + toDb(currentPeakIn), juce::dontSendNotification);
         outLabel.setText("OUT: " + toDb(currentPeakOut), juce::dontSendNotification);
+
+        auto linearToMeterDb = [](float lin)
+        {
+            if (lin < 1e-8f)
+                return -60.f;
+            return juce::jlimit(-60.f, 6.f, juce::Decibels::gainToDecibels(lin));
+        };
+        footerBar.getOutputMeterLeft().setLevel(linearToMeterDb(currentPeakOutLeft));
+        footerBar.getOutputMeterRight().setLevel(linearToMeterDb(currentPeakOutRight));
     }
 }
 
 void FractalDelayAudioProcessorEditor::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colour(0xff1a1d23));
+
+    // Linha separadora acima do footer (vai de ponta a ponta)
+    const int footerY = footerBar.getY();
+    g.setColour(juce::Colour(0xff3d4450));
+    g.drawHorizontalLine(footerY, 0.f, (float) getWidth());
 }
 
 void FractalDelayAudioProcessorEditor::resized()
 {
-    const auto bounds = getLocalBounds().reduced(14);
+    auto area = getLocalBounds();
+
+    // Footer ocupa toda a largura (fora do grid)
+    const int footerHeight = 52;
+    auto footerArea = area.removeFromBottom(footerHeight);
+    footerBar.setBounds(footerArea);
+
+    // Área restante com padding para o grid
+    area.removeFromBottom(8); // Gap antes do footer
+    const auto bounds = area.reduced(14, 14);
 
     juce::Grid grid;
     using Track = juce::Grid::TrackInfo;
     using Fr    = juce::Grid::Fr;
     using Px    = juce::Grid::Px;
 
-    grid.templateRows = { Track(Px(28)), Track(Fr(1)), Track(Px(22)) };
+    // Sem o footer, só header e corpo
+    grid.templateRows = { Track(Px(28)), Track(Fr(1)) };
     // Centro um pouco mais largo (100 : 145 : 100 ≈ 1 : 1.45 : 1)
     grid.templateColumns = { Track(Fr(100)), Track(Fr(145)), Track(Fr(100)) };
     grid.rowGap    = Px(8);
@@ -194,7 +220,6 @@ void FractalDelayAudioProcessorEditor::resized()
         juce::GridItem(inColumn).withArea(2, 1),
         juce::GridItem(centerColumn).withArea(2, 2),
         juce::GridItem(outColumn).withArea(2, 3),
-        juce::GridItem(footerLabel).withArea(3, 1, 3, 3),
     };
 
     grid.performLayout(bounds);

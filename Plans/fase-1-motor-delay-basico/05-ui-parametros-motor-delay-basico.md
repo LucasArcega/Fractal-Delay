@@ -6,16 +6,28 @@
 
 ## Objetivo
 
-Interface mínima para os parâmetros do **motor de delay básico** (esta fase ClickUp): tempo (musical/ms), subdivisão, *feedback*, *mix*, modo Clean/Tape, controles de *tape* se existirem, BPM só leitura opcional.
+Interface para os parâmetros do **motor de delay básico** (esta fase ClickUp): tempo (musical/ms), subdivisão, *feedback*, *mix*, modo Clean/Tape, controles de *tape* se existirem, BPM só leitura opcional.
 
 ## Nota de nomenclatura
 
 - **“Fase 1” na tarefa ClickUp** = primeira fase de **produto** (motor básico), **não** confundir com a [Fase 5 — Post-FX e Spatial](../fase-5-post-fx-spatial/) do *roadmap* completo.
 
-## Escopo
+## Estado já implementado no repo (base para evoluir)
 
-- `AudioProcessorEditor` + `SliderAttachment` / `ComboBoxAttachment` / etc.
-- Layout simples (`FlexBox`/`Grid`); persistência via estado do processador.
+- **Layout:** `juce::Grid` na `AudioProcessorEditor` — linhas: cabeçalho, corpo (3 colunas), rodapé; colunas **IN** | **Delay (placeholder)** | **OUT**.
+- **Colunas:** `juce::Component` “coluna” + `juce::FlexBox` em `resized()` (título, *label* de pico, *slider* vertical com altura mínima fixa).
+- **JUCE 8:** `Grid::Fr` usa **inteiros**; `grid.performLayout(juce::Rectangle<int>)`.
+- **Widgets partilhados:** `Source/Components/`, namespace **`GUI`** (`FooterBar`, `HorizontalMetter`, …).
+- **Rodapé:** `GUI::FooterBar` — caixa com dois `GUI::HorizontalMetter` empilhados (**saída L** em cima, **saída R** em baixo), largura ~55% centrada, *gap* e altura de faixa reduzidos.
+- **Áudio → UI:** fila *lock-free* (`AbstractFifo`) com mensagens (`PEAK_IN`, `PEAK_OUT`, `PEAK_OUT_LEFT`, `PEAK_OUT_RIGHT`, `INCREMENT`) escrita no `processBlock` e lida em `idle()` chamado por **`IdleTimer`** (~30 Hz), padrão alinhado ao [airwindows/Meter](https://github.com/airwindows/Meter).
+- **Parâmetros:** `SliderAttachment` para `inputGainDb` / `outputGainDb`; atributos de `AudioParameterFloat` com conversão texto↔dB segura.
+
+Ver checklist técnico completo: [`../00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
+## Escopo (resto da Fase 1 UI)
+
+- `SliderAttachment` / `ComboBoxAttachment` / APVTS para **tempo**, *feedback*, *mix*, modo Clean/Tape, etc., conforme [`02`](02-buffer-circular-delay.md)–[`04`](04-modos-clean-tape.md).
+- Manter o mesmo padrão de **fila + `idle()`** para novos medidores ou visualizações (não voltar a `Timer` + `isShowing()` sem *pump* garantido).
 
 ## Fora de escopo
 
@@ -28,6 +40,8 @@ Interface mínima para os parâmetros do **motor de delay básico** (esta fase C
 | `ParameterLayoutCompleteness` | IDs esperados ⊆ APVTS. |
 | `DefaultValuesMatchSpec` | *Defaults* da especificação. |
 | `StateRoundTrip` | `copyState` / `setStateInformation`. |
+
+Testes **GUI**: ver [`00-testes-unitarios-visao-geral.md`](../00-testes-unitarios-visao-geral.md) e convenções Windows/CI.
 
 ## Próxima fase ClickUp
 

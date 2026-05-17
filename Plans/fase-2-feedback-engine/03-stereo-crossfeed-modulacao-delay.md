@@ -39,6 +39,10 @@
 | `LfoDepthBounds` | Profundidade limitada para índice sempre válido no buffer. |
 | `ModulatedDelayContinuous` | Varredura de `delayOffset` contínua sem saltos > 1 amostra por amostra (ou documentar *artefact* aceite). |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próxima fase ClickUp
 
 [Fase 3 — Modos Avançados](../fase-3-modos-avancados/)

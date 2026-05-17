@@ -36,7 +36,14 @@ public:
     // Mensagens da thread de áudio para a UI — padrão Airwindows Meter
     struct AudioToUIMessage
     {
-        enum What { PEAK_IN, PEAK_OUT, INCREMENT } what { INCREMENT };
+        enum What
+        {
+            PEAK_IN,
+            PEAK_OUT,       // pico máximo na saída (todos os canais) — labels IN/OUT
+            PEAK_OUT_LEFT,  // saída canal esquerdo
+            PEAK_OUT_RIGHT, // saída canal direito
+            INCREMENT
+        } what { INCREMENT };
         float newValue = 0.f;
     };
 
@@ -81,8 +88,10 @@ private:
     double currentSampleRate = 44100.0;
     int rmsCount = 0;
     int rmsSize  = 1882;   // ~43 ms a 44100 Hz — igual ao Airwindows
-    float peakIn  = 0.f;
+    float peakIn = 0.f;
     float peakOut = 0.f;
+    float peakOutLeft = 0.f;
+    float peakOutRight = 0.f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FractalDelayAudioProcessor)
 };

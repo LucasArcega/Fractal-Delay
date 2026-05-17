@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 
+#include "Components/FooterBar.h"
 #include "PluginProcessor.h"
 
 class FractalDelayAudioProcessorEditor : public juce::AudioProcessorEditor
@@ -29,7 +30,7 @@ private:
 
     // --- Grid macro: header | 3 colunas | footer ---
     juce::Label headerLabel;
-    juce::Label footerLabel;
+    GUI::FooterBar footerBar;
 
     // Colunas (containers para FlexBox interno)
     juce::Component inColumn;
@@ -50,8 +51,10 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> inputAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> outputAttachment;
 
-    float currentPeakIn  = 0.f;
-    float currentPeakOut = 0.f;
+    float currentPeakIn        = 0.f;
+    float currentPeakOut       = 0.f; // máximo saída (labels)
+    float currentPeakOutLeft   = 0.f;
+    float currentPeakOutRight  = 0.f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FractalDelayAudioProcessorEditor)
 };

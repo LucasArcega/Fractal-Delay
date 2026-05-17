@@ -26,6 +26,10 @@ Por cada banda: **detector de envoltória** (*attack/release*) e **gain computer
 | `DuckingReducesWet` | Sinal lateral acima do limiar → RMS do *wet* cai X dB. |
 | `NoDuckWhenSideBelow` | Lateral baixo → ganho ≈ 0 dB de redução. |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo
 
 [`03-visualizacao-spectral-ducking-tempo-real.md`](03-visualizacao-spectral-ducking-tempo-real.md)

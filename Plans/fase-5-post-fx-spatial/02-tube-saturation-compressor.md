@@ -20,6 +20,10 @@ Cadeia **válvula** (saturação assimétrica ou *wavefolder* suave) seguida de 
 | `CompressorReduction` | Sinal acima do limiar reduz pico conforme *ratio*. |
 | `SaturationAsymmetry` | Meia-onda positiva vs. negativa diferem (métrica simples). |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo
 
 [`03-clipper-soft-hard-chorus.md`](03-clipper-soft-hard-chorus.md)

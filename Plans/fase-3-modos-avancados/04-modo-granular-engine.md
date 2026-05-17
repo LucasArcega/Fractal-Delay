@@ -22,6 +22,10 @@ Motor **granular** com múltiplas vozes, leitura a partir do buffer de delay com
 | `MaxVoicesRespected` | Nunca excede vozes configuradas. |
 | `SilenceInputZeroGrains` | Entrada zero → saída com energia abaixo de limiar (sem *explosion*). |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo
 
 [`05-modos-fractal-bloom-shards.md`](05-modos-fractal-bloom-shards.md)

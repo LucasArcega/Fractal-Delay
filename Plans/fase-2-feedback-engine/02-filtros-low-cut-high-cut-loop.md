@@ -38,6 +38,10 @@
 | `StereoIndependentState` | L/R com coeficientes iguais mas estados separados. |
 | `PrepareSampleRateChange` | `prepare` 44100 → 48000 recalcula coeficientes sem *crash*. |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo documento nesta pasta
 
 [`03-stereo-crossfeed-modulacao-delay.md`](03-stereo-crossfeed-modulacao-delay.md)

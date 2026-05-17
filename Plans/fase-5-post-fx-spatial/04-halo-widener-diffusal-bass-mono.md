@@ -23,6 +23,10 @@
 | `WidthZeroIdentity` | Largura mínima → matriz próxima da identidade. |
 | `EnergyConservationMid` | Sinal mono de entrada: energia total de saída não explode (limites). |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Encerramento do roadmap v1
 
 Com a Fase 5 concluída, o *Fractal-Delay* cobre motor, *feedback*, modos avançados, *ducking* espectral e pós-processamento espacial. Próximos passos típicos: presets, A/B, *installer*, QA em múltiplos *hosts*.

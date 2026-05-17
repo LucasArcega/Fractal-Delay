@@ -26,6 +26,10 @@ Decompor o sinal (tipicamente **entrada lateral** ou *wet*) em **8 bandas** para
 | `SineInSingleBand` | Tom puro cai principalmente numa banda (isolamento cruzado < limiar). |
 | `LatencyMatched` | Soma das bandas reconstruída (se aplicável) alinhada à entrada com atraso conhecido. |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo
 
 [`02-envelope-follower-banda-gain-computer.md`](02-envelope-follower-banda-gain-computer.md)

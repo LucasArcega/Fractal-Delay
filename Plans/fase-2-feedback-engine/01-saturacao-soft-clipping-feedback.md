@@ -39,6 +39,11 @@ Inserir **não-linearidade controlada** exclusivamente (ou principalmente) no **
 | `FeedbackLoopStable` | Vetor de impulso com *feedback* alto e *shaper* ativo — energia limitada após N amostras. |
 | `SmoothedParameterNoZipper` | Mudança escalonada de *drive* não dispara picos > limiar (opcional, *offline*). |
 
+
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo documento nesta pasta
 
 [`02-filtros-low-cut-high-cut-loop.md`](02-filtros-low-cut-high-cut-loop.md)

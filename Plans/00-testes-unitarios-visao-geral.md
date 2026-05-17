@@ -13,6 +13,14 @@ Este documento define **convenções comuns** para testes ao longo do [roadmap e
 
 - **Catch2 v3** recomendado para lógica/DSP; **`juce::UnitTest`** opcional para integração JUCE.
 
+## Testes com editor JUCE (`[gui]`)
+
+- No **Windows**, o Catch2 **não** corre *message pump* por defeito: timers/repaints JUCE podem encher a `InternalMessageQueue` e consumir RAM. O repo pode **excluir** `[gui]` do `ctest` por defeito e documentar execução manual do `FractalDelay_Tests.exe` ou uso de `runDispatchLoopUntil` onde `JUCE_MODAL_LOOPS_PERMITTED` está activo **só** no alvo de testes.
+- **`SKIP_FRACTAL_DELAY_GUI_TESTS`**: ambiente sem display — marcar `SKIP`.
+- **Linux CI**: típico usar *display* virtual (`xvfb-run`) para testes GUI.
+
+Detalhes e decisões de CMake: [`00-convencoes-repo-ui-testes.md`](00-convencoes-repo-ui-testes.md).
+
 ## Alvo CMake
 
 - Executável de testes que linka módulos DSP sem necessidade de carregar o binário VST completo, quando a arquitetura permitir.

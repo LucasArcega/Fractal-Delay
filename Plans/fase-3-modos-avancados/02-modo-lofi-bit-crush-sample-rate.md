@@ -22,6 +22,10 @@ Degradação intencional: **quantização de bit depth** e **hold** / *downsampl
 | `DownsampleHoldPeriod` | Período de *hold* alinha-se a `factor / sampleRate`. |
 | `ParameterSmoothing` | Mudança brusca de bits não gera DC infinito (média limitada). |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo
 
 [`03-modo-reverse-crossfade.md`](03-modo-reverse-crossfade.md)

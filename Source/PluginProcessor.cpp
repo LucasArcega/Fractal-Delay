@@ -72,8 +72,10 @@ void FractalDelayAudioProcessor::prepareToPlay(double sampleRate, int)
     currentSampleRate = sampleRate > 0.0 ? sampleRate : 44100.0;
     rmsSize  = static_cast<int>((1882.0 / 44100.0) * currentSampleRate);
     rmsCount = 0;
-    peakIn   = 0.f;
-    peakOut  = 0.f;
+    peakIn        = 0.f;
+    peakOut       = 0.f;
+    peakOutLeft  = 0.f;
+    peakOutRight = 0.f;
 }
 
 bool FractalDelayAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -104,11 +106,28 @@ void FractalDelayAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
 
     buffer.applyGain(outGain);
 
-    for (int i = 0; i < buffer.getNumSamples(); ++i)
+    const int nCh = buffer.getNumChannels();
+    const int nSm = buffer.getNumSamples();
+
+    if (nCh >= 1)
     {
-        for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
-            peakOut = juce::jmax(peakOut, std::abs(buffer.getReadPointer(ch)[i]));
+        const float* p0 = buffer.getReadPointer(0);
+        for (int i = 0; i < nSm; ++i)
+            peakOutLeft = juce::jmax(peakOutLeft, std::abs(p0[i]));
     }
+    if (nCh >= 2)
+    {
+        const float* p1 = buffer.getReadPointer(1);
+        for (int i = 0; i < nSm; ++i)
+            peakOutRight = juce::jmax(peakOutRight, std::abs(p1[i]));
+    }
+    else
+    {
+        // Mono: espelha L no R para os dois medidores do rodapé
+        peakOutRight = peakOutLeft;
+    }
+
+    peakOut = juce::jmax(peakOutLeft, peakOutRight);
 
     rmsCount += buffer.getNumSamples();
 
@@ -124,13 +143,23 @@ void FractalDelayAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
         msg.newValue = peakOut;
         audioToUI.push(msg);
 
+        msg.what = AudioToUIMessage::PEAK_OUT_LEFT;
+        msg.newValue = peakOutLeft;
+        audioToUI.push(msg);
+
+        msg.what = AudioToUIMessage::PEAK_OUT_RIGHT;
+        msg.newValue = peakOutRight;
+        audioToUI.push(msg);
+
         msg.what = AudioToUIMessage::INCREMENT;
         msg.newValue = 0.f;
         audioToUI.push(msg);
 
-        peakIn   = 0.f;
-        peakOut  = 0.f;
-        rmsCount = 0;
+        peakIn         = 0.f;
+        peakOut        = 0.f;
+        peakOutLeft    = 0.f;
+        peakOutRight   = 0.f;
+        rmsCount       = 0;
     }
 }
 

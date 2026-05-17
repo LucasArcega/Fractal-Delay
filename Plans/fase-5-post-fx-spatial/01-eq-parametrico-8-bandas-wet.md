@@ -21,6 +21,10 @@
 | `FlatResponseWhenAllZero` | Todas as bandas neutras → magnitude plana (± dB). |
 | `SingleBellBoost` | Uma banda +6 dB em 1 kHz → pico no espectro esperado (FFT offline). |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo
 
 [`02-tube-saturation-compressor.md`](02-tube-saturation-compressor.md)

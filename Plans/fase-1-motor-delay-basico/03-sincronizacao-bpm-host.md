@@ -41,6 +41,7 @@ Expressar o delay em **unidades musicais** ou **ms**; com `AudioPlayHead` válid
 ## Riscos
 
 - Diferenças de API entre versões JUCE; encapsular.
+- Parâmetros expostos na UI: seguir o mesmo padrão APVTS + validação de texto que o repo já usa — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Próximo documento nesta pasta
 

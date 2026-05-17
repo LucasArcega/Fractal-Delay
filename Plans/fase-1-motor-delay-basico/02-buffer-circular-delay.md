@@ -44,6 +44,7 @@
 ## Riscos
 
 - *Off-by-one* ms ↔ amostras; *thread safety* se UI ler o buffer (evitar ou duplicar estado).
+- Qualquer **áudio → UI** deve seguir o padrão do repo (fila *lock-free* + *timer* no editor), não `std::atomic` + lógica de visibilidade frágil no Standalone — ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Próximo documento nesta pasta
 

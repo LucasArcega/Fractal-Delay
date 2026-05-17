@@ -20,6 +20,10 @@
 | `HardClipNeverExceeds` | Amostras absolutas ≤ 1.0f (ou *headroom* definido). |
 | `ChorusModulationDepth` | Profundidade 0 → saída ≈ entrada (bypass interno). |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo
 
 [`04-halo-widener-diffusal-bass-mono.md`](04-halo-widener-diffusal-bass-mono.md)

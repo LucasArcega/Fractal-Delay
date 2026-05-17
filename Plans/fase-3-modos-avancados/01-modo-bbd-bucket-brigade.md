@@ -26,6 +26,10 @@ Modo de delay que imita **BBD**: banda limitada, *smearing* temporal, não-linea
 | `HighFreqAttenuation` | Energia > 12 kHz reduzida vs. modo Clean em sinal de teste. |
 | `StabilityImpulse` | Impulso não explode após 1 s de *feedback* moderado. |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo
 
 [`02-modo-lofi-bit-crush-sample-rate.md`](02-modo-lofi-bit-crush-sample-rate.md)

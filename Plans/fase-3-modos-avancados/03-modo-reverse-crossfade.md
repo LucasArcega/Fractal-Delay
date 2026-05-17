@@ -22,6 +22,10 @@ Janelas de áudio reproduzidas **ao contrário**, com **crossfades** entre segme
 | `NoDiscontinuityAtJoin` | Derivada primeira limitada nas junções (opcional, aproximada). |
 | `ReverseReadOrder` | Índices de leitura monótonos decrescentes dentro da janela. |
 
+---
+
+**Referência transversal:** convenções de repo, UI, filas áudio↔UI e testes JUCE — [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
+
 ## Próximo
 
 [`04-modo-granular-engine.md`](04-modo-granular-engine.md)
