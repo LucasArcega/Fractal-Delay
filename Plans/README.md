@@ -61,6 +61,10 @@ Ver **[`00-convencoes-repo-ui-testes.md`](00-convencoes-repo-ui-testes.md)** —
 
 Ver **[`00-cpp-clean-code.md`](00-cpp-clean-code.md)** — padrões de C++ moderno, *audio thread*, includes e alinhamento com `clang-format` / `clang-tidy`.
 
+## Skills (Cursor) — ClickUp e GitHub
+
+Ver **[`.cursor/skills/clickup-github-ticket-workflow/SKILL.md`](../.cursor/skills/clickup-github-ticket-workflow/SKILL.md)** — branch por ticket, PR no GitHub, link na tarefa ClickUp, estados após merge (MCP `user-clickup` + `gh`).
+
 ## Ordem de execução recomendada
 
 Respeitar a numeração **dentro** de cada pasta; as **fases ClickUp** seguem a ordem 1 → 5 (cada fase pode exigir *milestones* internos em paralelo quando indicado nos planos).

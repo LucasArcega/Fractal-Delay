@@ -5,6 +5,10 @@ alwaysApply: true
 
 # Workflow global (aplica-se a todas as tarefas neste workspace)
 
+## ClickUp + GitHub (tickets)
+
+- Fluxo branch/PR/ligação ao ClickUp: [`.cursor/skills/clickup-github-ticket-workflow/SKILL.md`](../skills/clickup-github-ticket-workflow/SKILL.md) (MCP `user-clickup`, `gh`).
+
 ## Antes de dar uma tarefa por concluída
 
 - Se mudaste **`CMakeLists.txt`**, **`Source/**`**, **`Tests/**`**, ou **`scripts/*.bat`** relevantes para o build: **tenta compilar** com o fluxo do repo (`cmake --build build` no ambiente MSVC+Ninja correcto, ou `scripts/build-debug.bat` / `scripts/all-debug.bat`). **Corrige erros de compilação** (e `ctest` se afectaste lógica testada) antes de declarar a tarefa **feita**.
