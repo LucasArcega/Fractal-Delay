@@ -13,6 +13,7 @@ Por cada banda: **detector de envoltória** (*attack/release*) e **gain computer
 - Parâmetros: *threshold*, *ratio*, *attack/release* por banda ou global com *link*.
 - *Lookahead* opcional (buffer pequeno) vs. causal.
 - Mistura final: aplicar ganhos por banda via **filtros de síntese** espelhando a análise ou via **STFT** se arquitetura for frequencial.
+- **Modularização:** *envelope* / *gain computer* em **`Source/DSP/`** + `target_sources`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Fora de escopo
 

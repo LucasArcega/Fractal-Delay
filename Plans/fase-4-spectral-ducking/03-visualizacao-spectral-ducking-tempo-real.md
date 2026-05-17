@@ -13,6 +13,7 @@ Mostrar ao utilizador **energia por banda** e/ou **redução de ganho aplicada**
 - Canal **áudio → UI**: `Atomic` / *lock-free FIFO* com *throttling* (ex. 30 Hz UI).
 - Componente JUCE: `Timer` + `drawRect` / path por barra; cores para *threshold*.
 - Modo *debug*: exportar valores numéricos.
+- **Modularização:** amostragem / fila para UI conforme [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md); *widgets* de barras em **`Source/Components/`**; núcleo de agregação de dados que não seja *paint* em **`Source/DSP/`** ou no processador como orquestração fina — evitar lógica de análise pesada dentro de `Component::paint`. Ver o mesmo doc (Organização do código).
 
 ## Fora de escopo
 

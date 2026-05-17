@@ -14,6 +14,7 @@ Inserir **não-linearidade controlada** exclusivamente (ou principalmente) no **
 - Curvas: `tanh`, polinómio ímpar suave, ou `juce::dsp::WaveShaper` com *drive* em dB ou linear suavizado (`LinearSmoothedValue`).
 - Ordem de processamento em relação a [`02-filtros-low-cut-high-cut-loop.md`](02-filtros-low-cut-high-cut-loop.md): definir (ex.: saturação **depois** dos filtros no *loop* para domar agudos pré-*clip*).
 - Parâmetros APVTS: intensidade, eventual *mix* dry do *shaper*.
+- **Modularização:** não-linearidade e laço de *feedback* em **`Source/DSP/`** (classes + `target_sources`); o `PluginProcessor` orquestra. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Fora de escopo
 

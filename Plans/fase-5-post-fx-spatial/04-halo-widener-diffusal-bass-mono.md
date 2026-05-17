@@ -14,6 +14,7 @@
 
 - Controles: largura, quantidade de *diffusion*, frequência de *bass mono*.
 - *Solo* de *diffusion* opcional para *debug*.
+- **Modularização:** *widener* / *diffusal* / *bass mono* em **`Source/DSP/`** + `target_sources`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Testes unitários
 

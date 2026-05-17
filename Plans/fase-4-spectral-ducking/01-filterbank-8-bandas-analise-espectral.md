@@ -13,6 +13,7 @@ Decompor o sinal (tipicamente **entrada lateral** ou *wet*) em **8 bandas** para
 - Banco de filtros em cascata ou DFT enxuta; latência uniforme entre bandas (compensação explícita).
 - Frequências de *edges* configuráveis ou preset (octavas).
 - Saída: vetor de 8 amplitudes RMS ou pico suavizado por bloco.
+- **Modularização:** *filterbank* e análise em **`Source/DSP/`** + `target_sources`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Fora de escopo
 

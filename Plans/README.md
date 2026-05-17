@@ -55,7 +55,7 @@ Ver [`00-testes-unitarios-visao-geral.md`](00-testes-unitarios-visao-geral.md).
 
 ## Convenções do repositório (UI, áudio↔UI, CI, Git)
 
-Ver **[`00-convencoes-repo-ui-testes.md`](00-convencoes-repo-ui-testes.md)** — alinha implementação com o que já está no código (Grid/FlexBox, fila *lock-free*, testes GUI no Windows, `clang-format`, etc.).
+Ver **[`00-convencoes-repo-ui-testes.md`](00-convencoes-repo-ui-testes.md)** — alinha implementação com o que já está no código (Grid/FlexBox, `Source/DSP/` vs `Source/Components/`, fila *lock-free*, testes GUI no Windows, `clang-format`, etc.).
 
 ## Clean code em C++
 

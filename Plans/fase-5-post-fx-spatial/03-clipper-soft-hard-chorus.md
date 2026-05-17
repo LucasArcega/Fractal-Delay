@@ -12,6 +12,7 @@
 
 - Clipper: limiar em dBFS, *knee* no modo soft.
 - Chorus: LFO, profundidade, *delay* curto por voz, filtro opcional.
+- **Modularização:** clipper + chorus em **`Source/DSP/`** + `target_sources`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Testes unitários
 

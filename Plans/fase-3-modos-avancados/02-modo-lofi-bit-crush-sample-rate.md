@@ -13,6 +13,7 @@ Degradação intencional: **quantização de bit depth** e **hold** / *downsampl
 - Bit depth efetivo (float → quantizar para 2–16 bits simulados).
 - *Sample-and-hold* com fator inteiro ou fracionário (CIC leve ou *hold* simples).
 - Anti-*zipper* em parâmetros; opcional filtro suave pós-*crush*.
+- **Modularização:** Lo-Fi em **`Source/DSP/`** (ficheiros dedicados + `target_sources`). Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Testes unitários
 
