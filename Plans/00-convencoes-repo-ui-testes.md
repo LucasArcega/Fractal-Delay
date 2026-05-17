@@ -11,6 +11,7 @@ Documento **vivo**: reflecte decisões já aplicadas no código (2026). Os plano
 
 ## Estilo e Git
 
+- **Clean code C++** (nomes, `const`, *audio thread*, ownership): [`00-cpp-clean-code.md`](00-cpp-clean-code.md).
 - **`.clang-format`**: `BasedOnStyle: Microsoft`, `NamespaceIndentation: All`, `ColumnLimit: 120`.
 - **`.gitattributes`**: `eol=lf` para código; `*.bat` com `crlf`.
 - **`.gitignore`**: inclui `build/`, `.claude/`, `compile_commands.json`, etc.

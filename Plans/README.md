@@ -57,6 +57,10 @@ Ver [`00-testes-unitarios-visao-geral.md`](00-testes-unitarios-visao-geral.md).
 
 Ver **[`00-convencoes-repo-ui-testes.md`](00-convencoes-repo-ui-testes.md)** — alinha implementação com o que já está no código (Grid/FlexBox, fila *lock-free*, testes GUI no Windows, `clang-format`, etc.).
 
+## Clean code em C++
+
+Ver **[`00-cpp-clean-code.md`](00-cpp-clean-code.md)** — padrões de C++ moderno, *audio thread*, includes e alinhamento com `clang-format` / `clang-tidy`.
+
 ## Ordem de execução recomendada
 
 Respeitar a numeração **dentro** de cada pasta; as **fases ClickUp** seguem a ordem 1 → 5 (cada fase pode exigir *milestones* internos em paralelo quando indicado nos planos).

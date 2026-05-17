@@ -33,6 +33,10 @@ alwaysApply: true
 - Testes que incluem `Source/*` com **`JuceHeader.h`**: include de `…_artefacts/JuceLibraryCode` no alvo de testes (ver `CMakeLists.txt`); replicar o padrão para novos executáveis de teste.
 - **`add_test`**: usar **`$<TARGET_FILE:…>`** com geradores multi-config (Visual Studio).
 
+## C++ — clean code
+
+- Guia curto alinhado ao repo: [`Plans/00-cpp-clean-code.md`](Plans/00-cpp-clean-code.md) (activa também a regra Cursor `cpp-clean-code` em `Source/` e `Tests/`).
+
 ## O que não fazer
 
 - Não inventar nomes de API JUCE (`getDefault*`).
