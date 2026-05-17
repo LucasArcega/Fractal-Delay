@@ -1,6 +1,6 @@
 # Plano: Saturação / soft clipping no feedback
 
-> **ClickUp:** [Fase 2 — Feedback Engine](https://app.clickup.com/90171225448/v/l/li/901713673872) · **Entrega:** 1/3 nesta pasta  
+> **ClickUp:** [Fase 2 — Feedback Engine](https://app.clickup.com/90171225448/v/l/li/901713673872) · **Entrega:** 1/4 nesta pasta  
 > **Tarefa:** [Saturação / soft clipping no feedback](https://app.clickup.com/t/86e1b2fj4)  
 > **Dependências:** concluir [Fase 1 — Motor de Delay Básico](../fase-1-motor-delay-basico/) (buffer + *mix* + *feedback* estáveis)  
 

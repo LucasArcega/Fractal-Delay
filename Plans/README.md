@@ -27,6 +27,7 @@ Documentação de **implementação** alinhada às **fases do ClickUp** do works
 1. [`01-saturacao-soft-clipping-feedback.md`](fase-2-feedback-engine/01-saturacao-soft-clipping-feedback.md)
 2. [`02-filtros-low-cut-high-cut-loop.md`](fase-2-feedback-engine/02-filtros-low-cut-high-cut-loop.md)
 3. [`03-stereo-crossfeed-modulacao-delay.md`](fase-2-feedback-engine/03-stereo-crossfeed-modulacao-delay.md)
+4. [`04-compasso-tempo-map-e-beat-host.md`](fase-2-feedback-engine/04-compasso-tempo-map-e-beat-host.md)
 
 ### Fase 3 — Modos Avançados
 

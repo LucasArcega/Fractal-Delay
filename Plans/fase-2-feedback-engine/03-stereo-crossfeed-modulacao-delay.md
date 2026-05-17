@@ -1,6 +1,6 @@
 # Plano: Stereo crossfeed e modulação de delay
 
-> **ClickUp:** [Fase 2 — Feedback Engine](https://app.clickup.com/90171225448/v/l/li/901713673872) · **Entrega:** 3/3 nesta pasta  
+> **ClickUp:** [Fase 2 — Feedback Engine](https://app.clickup.com/90171225448/v/l/li/901713673872) · **Entrega:** 3/4 nesta pasta  
 > **Tarefa:** [Stereo crossfeed e modulação de delay](https://app.clickup.com/t/86e1b2fq3)  
 > **Dependências:** [`01`](01-saturacao-soft-clipping-feedback.md) + [`02`](02-filtros-low-cut-high-cut-loop.md) (laço de *feedback* completo)  
 

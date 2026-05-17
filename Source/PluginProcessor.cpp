@@ -1,6 +1,10 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "DSP/DelayTempoMath.h"
+
+#include <optional>
+
 namespace
 {
 constexpr float silenceDb = -80.f;
@@ -67,6 +71,28 @@ juce::AudioProcessorValueTreeState::ParameterLayout FractalDelayAudioProcessor::
         juce::NormalisableRange<float>(0.f, 2000.f, 1.f, 1.f),
         250.f));
 
+    // 0 = tempo livre (ms); 1 = sincronia ao BPM do host (ver Plans/.../03-sincronizacao-bpm-host.md).
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID{ "delaySyncMode", 1 },
+        "Delay sync",
+        juce::StringArray{ "Ms", "Sync" },
+        0));
+
+    static const char* divisionLabels[static_cast<size_t>(fractal_tempo::delayDivisionChoiceCount())] = {
+        "1/1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/64", "1/128",
+        "1/2d", "1/4d", "1/8d", "1/16d", "1/32d",
+        "1/2t", "1/4t", "1/8t", "1/16t", "1/32t"
+    };
+    juce::StringArray divisionStrings;
+    for (auto* s : divisionLabels)
+        divisionStrings.add(s);
+
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID{ "delayDivision", 1 },
+        "Delay division",
+        divisionStrings,
+        2));
+
     return layout;
 }
 
@@ -118,8 +144,38 @@ void FractalDelayAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
         apvts.getRawParameterValue("inputGainDb")->load());
     const float outGain = juce::Decibels::decibelsToGain(
         apvts.getRawParameterValue("outputGainDb")->load());
-    // Parâmetro em ms; convertemos para amostras inteiras (v1 sem interpolação fracionária).
     const float delayMs = apvts.getRawParameterValue("delayMs")->load();
+
+    int syncModeIndex = 0;
+    if (auto* c = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter("delaySyncMode")))
+        syncModeIndex = c->getIndex();
+
+    int divisionIndex = 0;
+    if (auto* c = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter("delayDivision")))
+        divisionIndex = c->getIndex();
+
+    // BPM: só desde processBlock (requisito JUCE). Muitos hosts mantêm BPM com transporte parado.
+    std::optional<double> hostBpm;
+    if (auto* hostPlayHead = getPlayHead())
+    {
+        if (const auto position = hostPlayHead->getPosition())
+        {
+            if (const auto bpmOpt = position->getBpm())
+            {
+                const double b = *bpmOpt;
+                if (b > 0.0 && std::isfinite(b))
+                    hostBpm = b;
+            }
+        }
+    }
+
+    const int delaySamples = fractal_tempo::resolveDelaySamples(
+        syncModeIndex,
+        delayMs,
+        divisionIndex,
+        hostBpm,
+        currentSampleRate,
+        delayLine.getMaxDelaySamples());
 
     buffer.applyGain(inGain);
 
@@ -131,10 +187,6 @@ void FractalDelayAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
 
     for (int i = 0; i < nSm; ++i)
     {
-        // Mesmo atraso para todos os canais neste bloco (leitura barata do APVTS).
-        int delaySamples = juce::roundToInt(delayMs * static_cast<float>(currentSampleRate) / 1000.f);
-        delaySamples = juce::jlimit(0, delayLine.getMaxDelaySamples(), delaySamples);
-
         // Copia entrada já com gain de entrada — é o que alimenta o delay e os medidores de entrada.
         for (int ch = 0; ch < nCh; ++ch)
             inScratch[ch] = buffer.getReadPointer(ch)[i];
