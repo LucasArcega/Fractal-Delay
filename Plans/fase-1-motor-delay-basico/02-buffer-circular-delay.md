@@ -10,7 +10,8 @@
 
 ## Escopo
 
-- Classe dedicada (ex.: `CircularDelayBuffer`), agnóstica de UI.
+- Implementação em **`Source/DSP/CircularDelayBuffer.h`** + **`Source/DSP/CircularDelayBuffer.cpp`** (classe pura; **não** `juce::Component`); o `PluginProcessor` apenas orquestra.
+- Classe dedicada (nome canónico: `CircularDelayBuffer`), agnóstica de UI.
 - Multi-canal; tamanho máximo derivado de `maxDelaySeconds * sampleRate` + margem.
 - API sugerida: `prepare`, `reset`, `pushSample` / `pushBlock`, `readDelayed`.
 - Interpolação linear ou nenhuma na v1 do buffer — documentar.
@@ -24,7 +25,7 @@
 
 ## Design sugerido
 
-- `std::vector<float>` por canal; `writeIndex`; *clamp* de `delayInSamples`.
+- Ficheiros `Source/DSP/CircularDelayBuffer.{h,cpp}`: `std::vector<float>` por canal; `writeIndex`; *clamp* de `delayInSamples`.
 - Integração estilo *write pointer* com `processBlock` para testes amostra a amostra.
 - Não realocar em `processBlock`.
 

@@ -14,6 +14,7 @@
 - Matriz 2×2 configurável: entradas L/R → entradas efetivas dos *delay lines*.
 - LFOs em fase audível (0,05–10 Hz típico) com `LinearSmoothedValue` no *delay time* (interpolação necessária no buffer — pode exigir **atraso fracionário** ou oversampling do índice de leitura).
 - Sincronização opcional ao BPM do *host* para velocidade de LFO (reutilizar utilitários da Fase 1).
+- **Modularização:** matriz estéreo / LFOs / leitura fracionária em **`Source/DSP/`** (ficheiros dedicados); evitar inflar só o `PluginProcessor`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Fora de escopo
 

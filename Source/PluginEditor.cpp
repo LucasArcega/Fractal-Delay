@@ -30,7 +30,7 @@ namespace
         l.setColour(juce::Label::textColourId, juce::Colour(0xffaaaaaa));
     }
 
-    /** Coluna IN/OUT: título, medidor, slider (altura flex, mínimo fixo). */
+    /** Coluna IN/OUT: título, medidor, controle deslizante (altura flexível, altura mínima fixa). */
     void layoutSideStrip(juce::Component& column,
                          juce::Label& title,
                          juce::Label& peak,
@@ -53,7 +53,7 @@ namespace
         fb.performLayout(r);
     }
 
-    /** Coluna central: título + dica (placeholder até haver parâmetros de delay). */
+    /** Coluna central: título + texto de dica (provisório até existirem parâmetros de delay na UI). */
     void layoutCenterStrip(juce::Component& column, juce::Label& title, juce::Label& hint)
     {
         auto r = column.getLocalBounds().toFloat();
@@ -73,7 +73,7 @@ FractalDelayAudioProcessorEditor::FractalDelayAudioProcessorEditor(FractalDelayA
     : AudioProcessorEditor(&p)
     , audioProcessor(p)
 {
-    // Janela um pouco mais larga para 3 colunas (Grid + FlexBox)
+    // Janela um pouco mais larga para três colunas (grade JUCE + FlexBox).
     setSize(640, 360);
 
     headerLabel.setText("Fractal Delay", juce::dontSendNotification);
@@ -108,7 +108,7 @@ FractalDelayAudioProcessorEditor::FractalDelayAudioProcessorEditor(FractalDelayA
     delayTitle.setColour(juce::Label::textColourId, juce::Colours::white);
 
     delayHint.setText(
-        juce::translate("Time, feedback, mix and damping will live here."),
+        juce::translate("Aqui vão aparecer tempo de delay, feedback, mistura e amortecimento."),
         juce::dontSendNotification);
     delayHint.setJustificationType(juce::Justification::centred);
     delayHint.setFont(juce::Font(juce::FontOptions(12.f)));
@@ -184,7 +184,7 @@ void FractalDelayAudioProcessorEditor::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colour(0xff1a1d23));
 
-    // Linha separadora acima do footer (vai de ponta a ponta)
+    // Linha separadora acima do rodapé (largura total da janela).
     const int footerY = footerBar.getY();
     g.setColour(juce::Colour(0xff3d4450));
     g.drawHorizontalLine(footerY, 0.f, (float) getWidth());
@@ -194,13 +194,13 @@ void FractalDelayAudioProcessorEditor::resized()
 {
     auto area = getLocalBounds();
 
-    // Footer ocupa toda a largura (fora do grid)
+    // Rodapé em toda a largura (fora da grade principal).
     const int footerHeight = 52;
     auto footerArea = area.removeFromBottom(footerHeight);
     footerBar.setBounds(footerArea);
 
-    // Área restante com padding para o grid
-    area.removeFromBottom(8); // Gap antes do footer
+    // Área que sobra: margem interna antes de aplicar a grade.
+    area.removeFromBottom(8); // Espaço entre a grade e o rodapé
     const auto bounds = area.reduced(14, 14);
 
     juce::Grid grid;
@@ -208,9 +208,9 @@ void FractalDelayAudioProcessorEditor::resized()
     using Fr    = juce::Grid::Fr;
     using Px    = juce::Grid::Px;
 
-    // Sem o footer, só header e corpo
+    // Grade só com cabeçalho e corpo (o rodapé já foi removido de area).
     grid.templateRows = { Track(Px(28)), Track(Fr(1)) };
-    // Centro um pouco mais largo (100 : 145 : 100 ≈ 1 : 1.45 : 1)
+    // Coluna do meio um pouco mais larga (100 : 145 : 100 ≈ 1 : 1,45 : 1).
     grid.templateColumns = { Track(Fr(100)), Track(Fr(145)), Track(Fr(100)) };
     grid.rowGap    = Px(8);
     grid.columnGap = Px(10);

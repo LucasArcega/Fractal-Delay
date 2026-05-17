@@ -13,6 +13,7 @@ Motor **granular** com múltiplas vozes, leitura a partir do buffer de delay com
 - N vozes; fila de grãos; jitter de posição e de pitch fino (± cents).
 - Limites de CPU: máximo de grãos ativos; *fade in/out* por grão.
 - Mistura com modos anteriores via parâmetro global de modo.
+- **Modularização:** motor granular em **`Source/DSP/`** (vários `.h/.cpp` se necessário) + `target_sources`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Testes unitários
 

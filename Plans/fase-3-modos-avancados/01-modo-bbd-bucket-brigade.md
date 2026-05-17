@@ -13,6 +13,7 @@ Modo de delay que imita **BBD**: banda limitada, *smearing* temporal, não-linea
 - Arquitetura sugerida: *delay line* principal + **filtros anti-*alias* / reconstrução** agressivos + opcional *waveshaper* leve no caminho.
 - Parâmetros: “*stages*” ou *darkness*, *drive*, mistura do modo com o modo anterior (se *dry* de modo).
 - Alternativa literatura: modelo baseado em ODEs ou cadeia de *allpass* — escolher uma abordagem e documentar no cabeçalho do módulo.
+- **Modularização:** modo BBD como módulo(s) em **`Source/DSP/`** + `target_sources`; não `juce::Component`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Fora de escopo
 

@@ -12,6 +12,7 @@ Cadeia **válvula** (saturação assimétrica ou *wavefolder* suave) seguida de 
 
 - *Oversampling* ×2 recomendado para saturação se CPU permitir.
 - Compressor: *threshold*, *ratio*, *attack/release*, *make-up*.
+- **Modularização:** saturação + compressor em **`Source/DSP/`** + `target_sources`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Testes unitários
 

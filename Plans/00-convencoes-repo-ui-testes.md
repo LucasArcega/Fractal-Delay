@@ -16,6 +16,14 @@ Documento **vivo**: reflecte decisões já aplicadas no código (2026). Os plano
 - **`.gitattributes`**: `eol=lf` para código; `*.bat` com `crlf`.
 - **`.gitignore`**: inclui `build/`, `.claude/`, `compile_commands.json`, etc.
 
+## Organização do código (DSP vs UI)
+
+- **DSP** (*audio thread*, sem alocações após `prepare`): classes puras em **`Source/DSP/`** (pares `.h` / `.cpp`, *namespace* livre ou anónimo no `.cpp`). **Não** colocar algoritmo de áudio em subclasses de `juce::Component`.
+- **UI**: *widgets* reutilizáveis em **`Source/Components/`** + namespace **`GUI`** (ver secção *UI — layout* abaixo).
+- **`FractalDelayAudioProcessor`**: *facade* fina — prepara parâmetros, orquestra módulos DSP, fila áudio→UI; **evitar** centenas de linhas de núcleo DSP dentro de [`PluginProcessor.cpp`](../Source/PluginProcessor.cpp).
+- **Quando dividir em novos ficheiros**: algoritmo reutilizável, segunda responsabilidade clara, ou um ficheiro a crescer com duas “histórias” (~300–400+ linhas) — extrair para `Source/DSP/` ou `Source/Components/` e registar o `.cpp` em **`target_sources(FractalDelay …)`** no [`CMakeLists.txt`](../CMakeLists.txt) (mesmo padrão que `FooterBar.cpp`, etc.).
+- Padrões C++ (*const*, *audio thread*, ownership): [`00-cpp-clean-code.md`](00-cpp-clean-code.md).
+
 ## UI — layout
 
 - **Macro**: `juce::Grid` na janela do editor (linhas: cabeçalho / corpo / rodapé; colunas: IN | centro Delay | OUT). `Grid::Fr` no JUCE 8 usa **inteiros** (ex. `Fr(100)`, `Fr(145)`), não `float`.

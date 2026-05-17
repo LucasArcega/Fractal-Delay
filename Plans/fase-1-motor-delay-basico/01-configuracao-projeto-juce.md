@@ -31,6 +31,7 @@ fractal-delay/
   Source/
     PluginProcessor.h / .cpp
     PluginEditor.h   / .cpp
+    DSP/              # núcleo de áudio (classes puras; não juce::Component)
     Components/       # widgets reutilizáveis (namespace GUI)
   Tests/
     FractalDelayTests.cpp
@@ -57,7 +58,7 @@ fractal-delay/
 - `cmake_minimum_required` compatível com a *toolchain*.
 - Incluir JUCE: **submódulo Git** `https://github.com/juce-framework/JUCE` com *tag* fixa, ou **`FetchContent`** com `GIT_TAG` (é o que o repo usa).
 - `juce_add_plugin` com `PLUGIN_MANUFACTURER_CODE`, `PLUGIN_CODE` únicos; `COPY_PLUGIN_AFTER_BUILD` **OFF** por defeito (evitar cópia para `Program Files` sem admin); `FORMATS` (ex.: `VST3 Standalone`).
-- `target_sources`: `PluginProcessor` / `PluginEditor` + ficheiros em `Source/Components/` (ex.: `FooterBar.cpp`, `HorizontalMetter.cpp`).
+- `target_sources`: `PluginProcessor` / `PluginEditor` + ficheiros em `Source/Components/` (ex.: `FooterBar.cpp`, `HorizontalMetter.cpp`) + ficheiros em **`Source/DSP/`** quando existirem (cada novo `.cpp` listado explicitamente, como os *components*).
 - Linkar módulos JUCE mínimos; incluir `juce_dsp` quando o DSP desta fase for integrado.
 
 ### 3. `AudioProcessor` esqueleto

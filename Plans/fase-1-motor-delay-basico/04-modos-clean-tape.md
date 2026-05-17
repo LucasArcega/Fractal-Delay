@@ -13,6 +13,7 @@ Dois caminhos no mesmo núcleo: **Clean** (linear, transparente) e **Tape** (sat
 - `DelayCharacter { Clean, Tape }` ou parâmetro equivalente.
 - Mistura *dry/wet* documentada; Tape com saturação e LP na realimentação ou pós-leitura conforme desenho único de produto.
 - Estabilidade com *feedback* alto (*clip* suave ou limite de ganho de laço).
+- **Modularização:** Clean/Tape e coloração em **`Source/DSP/`** (módulos dedicados + `target_sources`); não concentrar tudo no `PluginProcessor`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Relação com a Fase 2 (ClickUp)
 

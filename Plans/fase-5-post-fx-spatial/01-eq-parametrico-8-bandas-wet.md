@@ -13,6 +13,7 @@
 - Tipos: *peak*, *low shelf*, *high shelf*, *HPF* opcional na primeira banda.
 - Coeficientes `juce::dsp::IIR` ou `EQ` custom; *smoothing* de Q/ganho/freq.
 - Presets de fábrica opcionais.
+- **Modularização:** cadeia de EQ *wet* em **`Source/DSP/`** (módulos + `target_sources`). Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Testes unitários
 

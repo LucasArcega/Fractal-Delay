@@ -71,6 +71,7 @@ target_sources(
     PRIVATE
         Source/PluginProcessor.cpp
         Source/PluginEditor.cpp
+        Source/DSP/CircularDelayBuffer.cpp
         Source/Components/FooterBar.cpp
         Source/Components/HorizontalMetter.cpp
 )

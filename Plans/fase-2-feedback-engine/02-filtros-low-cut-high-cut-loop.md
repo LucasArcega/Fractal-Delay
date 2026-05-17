@@ -13,6 +13,7 @@
 - Filtros IIR de 1ª ou 2ª ordem por canal (`juce::dsp::IIR` ou `StateVariableTPTFilter`).
 - Frequências de corte em Hz com *smoothing*; preparação em `prepareToPlay` com `ProcessorDuplicator` para estéreo.
 - Resposta estável: verificar *zipper* ao automatizar cortes.
+- **Modularização:** *tone stack* / filtros do laço em **`Source/DSP/`** + `target_sources`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Fora de escopo
 

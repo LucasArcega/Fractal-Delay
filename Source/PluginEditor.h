@@ -15,7 +15,7 @@ public:
     void resized() override;
     void idle();
 
-    // Padrão Airwindows: struct de timer separado que chama idle()
+    // Padrão Airwindows: timer separado chama idle() para drenar a fila sem bloquear a GUI.
     struct IdleTimer : juce::Timer
     {
         explicit IdleTimer(FractalDelayAudioProcessorEditor* e) : ed(e) {}
@@ -28,11 +28,11 @@ private:
 
     std::unique_ptr<IdleTimer> idleTimer;
 
-    // --- Grid macro: header | 3 colunas | footer ---
+    // --- Grade macro: cabeçalho | três colunas | rodapé ---
     juce::Label headerLabel;
     GUI::FooterBar footerBar;
 
-    // Colunas (containers para FlexBox interno)
+    // Colunas (contêineres para o FlexBox interno de cada faixa).
     juce::Component inColumn;
     juce::Component centerColumn;
     juce::Component outColumn;
@@ -52,7 +52,7 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> outputAttachment;
 
     float currentPeakIn        = 0.f;
-    float currentPeakOut       = 0.f; // máximo saída (labels)
+    float currentPeakOut       = 0.f; // pico máximo na saída (rótulos IN/OUT agregados)
     float currentPeakOutLeft   = 0.f;
     float currentPeakOutRight  = 0.f;
 

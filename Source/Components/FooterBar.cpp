@@ -10,7 +10,7 @@ namespace GUI
 
     void FooterBar::paint(juce::Graphics& g)
     {
-        // Sem decoração - a linha separadora é desenhada no editor
+        // Sem decoração: a linha separadora é desenhada no editor.
         juce::ignoreUnused(g);
     }
 
@@ -18,13 +18,13 @@ namespace GUI
     {
         auto bounds = getLocalBounds();
 
-        // Padding vertical para dar espaço
+        // Recuo vertical para respirar.
         bounds.reduce(0, 10);
 
         const int gap = 6;
         const int rowH = juce::jmax(6, (bounds.getHeight() - gap) / 2);
 
-        // Largura dos medidores: 60% da largura disponível, centrado
+        // Largura dos medidores: 60% da área útil, centralizado.
         const int meterWidth = juce::roundToInt((float) bounds.getWidth() * 0.6f);
         const int xStart = bounds.getX() + (bounds.getWidth() - meterWidth) / 2;
 

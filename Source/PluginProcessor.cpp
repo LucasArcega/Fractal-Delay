@@ -4,11 +4,14 @@
 namespace
 {
 constexpr float silenceDb = -80.f;
+
+/** Teto de tempo de atraso reservado no buffer circular (segundos). Define o tamanho máximo do anel. */
+constexpr double maxDelayTimeSeconds = 2.0;
 } // namespace
 
 juce::AudioProcessorValueTreeState::ParameterLayout FractalDelayAudioProcessor::createParameterLayout()
 {
-    // Converte valor dB para texto exibido no slider e no host
+    // Converte valor em dB para o texto mostrado no controle e no host (DAW).
     auto valueToText = [](float value, int) -> juce::String
     {
         if (value <= silenceDb + 1.f)
@@ -16,9 +19,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout FractalDelayAudioProcessor::
         return juce::String(value, 1) + " dB";
     };
 
-    // Converte texto digitado pelo utilizador de volta para dB
+    // Converte o texto que o usuário digitou de volta para dB.
     // Aceita: "0", "-6.0", "-6.0 dB", "-inf", "-infinity"
-    // Rejeita texto inválido devolvendo silenceDb (sem crash)
+    // Se o texto for inválido, devolve silenceDb (evita estado inválido ou exceção).
     auto textToValue = [](const juce::String& text) -> float
     {
         auto t = text.trim().toLowerCase();
@@ -27,15 +30,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout FractalDelayAudioProcessor::
         if (t.endsWith("db"))
             t = t.dropLastCharacters(2).trim();
 
-        // Trata silêncio
+        // Trata silêncio (-inf, etc.)
         if (t == "-inf" || t == "-infinity" || t == "inf" || t.isEmpty())
             return silenceDb;
 
         // Tenta converter para número
         const float parsed = t.getFloatValue();
 
-        // getFloatValue() devolve 0.0 para texto não numérico ("abc")
-        // Distingue "0" válido de lixo verificando se o texto começa com dígito ou sinal
+        // getFloatValue() devolve 0.0 para texto não numérico ("abc").
+        // Distingue zero válido de "lixo": o texto precisa começar com dígito ou sinal.
         const bool looksNumeric = t[0] == '-' || t[0] == '+' || juce::CharacterFunctions::isDigit(t[0]);
         if (!looksNumeric)
             return silenceDb;
@@ -51,23 +54,31 @@ juce::AudioProcessorValueTreeState::ParameterLayout FractalDelayAudioProcessor::
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID{ "inputGainDb", 1 }, "Input", range, 0.f, attrs));
+        juce::ParameterID{ "inputGainDb", 1 }, juce::translate("Entrada"), range, 0.f, attrs));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        juce::ParameterID{ "outputGainDb", 1 }, "Output", range, 0.f, attrs));
+        juce::ParameterID{ "outputGainDb", 1 }, juce::translate("Saída"), range, 0.f, attrs));
+
+    // Tempo de delay em milissegundos (0 = sem eco neste caminho; o buffer ainda é alimentado).
+    // Sem controle deslizante no editor nesta fase — automação genérica do host / lista de parâmetros.
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID{ "delayMs", 1 },
+        "Delay (ms)",
+        juce::NormalisableRange<float>(0.f, 2000.f, 1.f, 1.f),
+        250.f));
 
     return layout;
 }
 
 FractalDelayAudioProcessor::FractalDelayAudioProcessor()
     : AudioProcessor(BusesProperties()
-          .withInput("Input",  juce::AudioChannelSet::stereo(), true)
-          .withOutput("Output", juce::AudioChannelSet::stereo(), true))
+          .withInput(juce::translate("Entrada"), juce::AudioChannelSet::stereo(), true)
+          .withOutput(juce::translate("Saída"), juce::AudioChannelSet::stereo(), true))
     , apvts(*this, nullptr, "PARAMS", createParameterLayout())
 {
 }
 
-void FractalDelayAudioProcessor::prepareToPlay(double sampleRate, int)
+void FractalDelayAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     currentSampleRate = sampleRate > 0.0 ? sampleRate : 44100.0;
     rmsSize  = static_cast<int>((1882.0 / 44100.0) * currentSampleRate);
@@ -76,6 +87,18 @@ void FractalDelayAudioProcessor::prepareToPlay(double sampleRate, int)
     peakOut       = 0.f;
     peakOutLeft  = 0.f;
     peakOutRight = 0.f;
+
+    // Número de canais do bus principal (mono ou estéreo); o delay line segue o mesmo layout.
+    const int numCh = juce::jmax(1, getTotalNumOutputChannels());
+
+    // Quantas amostras cabem no máximo de 2 s de atraso (arredondado para a taxa de amostragem atual).
+    const int maxDelaySamples =
+        juce::roundToInt(currentSampleRate * maxDelayTimeSeconds);
+
+    // Margem = pelo menos um bloco: evita ler "além" do que já foi escrito de forma segura.
+    const int margin = juce::jmax(1, samplesPerBlock);
+    delayLine.prepare(numCh, maxDelaySamples, margin);
+    delayLine.reset();
 }
 
 bool FractalDelayAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -95,20 +118,46 @@ void FractalDelayAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, 
         apvts.getRawParameterValue("inputGainDb")->load());
     const float outGain = juce::Decibels::decibelsToGain(
         apvts.getRawParameterValue("outputGainDb")->load());
+    // Parâmetro em ms; convertemos para amostras inteiras (v1 sem interpolação fracionária).
+    const float delayMs = apvts.getRawParameterValue("delayMs")->load();
 
     buffer.applyGain(inGain);
-
-    for (int i = 0; i < buffer.getNumSamples(); ++i)
-    {
-        for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
-            peakIn = juce::jmax(peakIn, std::abs(buffer.getReadPointer(ch)[i]));
-    }
-
-    buffer.applyGain(outGain);
 
     const int nCh = buffer.getNumChannels();
     const int nSm = buffer.getNumSamples();
 
+    // Só precisamos de até 2 canais neste plugin; array fixo evita alocação no loop.
+    float inScratch[2] {};
+
+    for (int i = 0; i < nSm; ++i)
+    {
+        // Mesmo atraso para todos os canais neste bloco (leitura barata do APVTS).
+        int delaySamples = juce::roundToInt(delayMs * static_cast<float>(currentSampleRate) / 1000.f);
+        delaySamples = juce::jlimit(0, delayLine.getMaxDelaySamples(), delaySamples);
+
+        // Copia entrada já com gain de entrada — é o que alimenta o delay e os medidores de entrada.
+        for (int ch = 0; ch < nCh; ++ch)
+            inScratch[ch] = buffer.getReadPointer(ch)[i];
+
+        for (int ch = 0; ch < nCh; ++ch)
+            peakIn = juce::jmax(peakIn, std::abs(inScratch[ch]));
+
+        // 1) Lê o tap atrasado (ou bypass se atraso 0). 2) Depois empurra a entrada no anel.
+        for (int ch = 0; ch < nCh; ++ch)
+        {
+            const float in = inScratch[ch];
+            const float wet =
+                (delaySamples <= 0) ? in : delayLine.readDelayed(ch, delaySamples);
+            buffer.getWritePointer(ch)[i] = wet;
+        }
+
+        for (int ch = 0; ch < nCh; ++ch)
+            delayLine.pushSample(ch, inScratch[ch]);
+    }
+
+    buffer.applyGain(outGain);
+
+    // Picos de saída: medem o sinal já com delay e gain de saída (o que vai ao conversor D/A).
     if (nCh >= 1)
     {
         const float* p0 = buffer.getReadPointer(0);

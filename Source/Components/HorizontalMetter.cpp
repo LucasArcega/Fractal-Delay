@@ -7,7 +7,7 @@ namespace GUI
         auto bounds = getLocalBounds().toFloat();
         const float rad = juce::jmin(3.f, bounds.getHeight() * 0.45f);
 
-        // Background: tom mais escuro coerente com o tema
+        // Fundo: tom mais escuro alinhado ao tema.
         g.setColour(juce::Colour(0xff1a1d23));
         g.fillRoundedRectangle(bounds, rad);
 
@@ -15,7 +15,7 @@ namespace GUI
         g.setColour(juce::Colour(0xff3d4450));
         g.drawRoundedRectangle(bounds, rad, 1.f);
 
-        // Barra de nível com gradiente baseado no valor
+        // Barra de nível com gradiente conforme o valor.
         const float scaledW = juce::jmap(level, -60.f, 6.f, 0.f, (float) getWidth());
         if (scaledW > 0.f)
         {

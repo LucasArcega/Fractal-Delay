@@ -1,6 +1,8 @@
 #pragma once
 #include <JuceHeader.h>
 
+#include "DSP/CircularDelayBuffer.h"
+
 class FractalDelayAudioProcessor : public juce::AudioProcessor
 {
 public:
@@ -33,13 +35,13 @@ public:
     juce::AudioProcessorValueTreeState& getAPVTS() noexcept { return apvts; }
     const juce::AudioProcessorValueTreeState& getAPVTS() const noexcept { return apvts; }
 
-    // Mensagens da thread de áudio para a UI — padrão Airwindows Meter
+    // Mensagens da thread de áudio para a interface — padrão tipo Airwindows Meter.
     struct AudioToUIMessage
     {
         enum What
         {
             PEAK_IN,
-            PEAK_OUT,       // pico máximo na saída (todos os canais) — labels IN/OUT
+            PEAK_OUT,       // pico máximo na saída (todos os canais) — rótulos IN/OUT no medidor
             PEAK_OUT_LEFT,  // saída canal esquerdo
             PEAK_OUT_RIGHT, // saída canal direito
             INCREMENT
@@ -87,11 +89,13 @@ private:
 
     double currentSampleRate = 44100.0;
     int rmsCount = 0;
-    int rmsSize  = 1882;   // ~43 ms a 44100 Hz — igual ao Airwindows
+    int rmsSize  = 1882;   // ~43 ms a 44,1 kHz — mesmo critério do Airwindows Meter
     float peakIn = 0.f;
     float peakOut = 0.f;
     float peakOutLeft = 0.f;
     float peakOutRight = 0.f;
+
+    CircularDelayBuffer delayLine;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FractalDelayAudioProcessor)
 };

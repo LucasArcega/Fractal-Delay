@@ -13,6 +13,7 @@ Expressar o delay em **unidades musicais** ou **ms**; com `AudioPlayHead` válid
 - *Wrapper* para `AudioPlayHead` / `PositionInfo` conforme a versão JUCE.
 - Modo musical: subdivisão → segundos → amostras; modo ms independente de BPM.
 - Fallback sem *playhead* ou BPM inválido; suavização opcional de `delaySamples`.
+- **Modularização:** conversões tempo↔amostras e estado associado em **`Source/DSP/`** (`.h/.cpp` + `target_sources`); o `PluginProcessor` coordena. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Fora de escopo
 

@@ -17,6 +17,7 @@ Três variantes de **multi-tap / recursão espectral temporal** (nomes de market
 - Especificação matemática por modo (tabela de taps e ganhos).
 - Partilha de infra com motor granular ou *delay line* múltipla.
 - Prioridade **baixa** no ClickUp — implementar após modos core (BBD, Lo-Fi, Reverse, Granular).
+- **Modularização:** taps / Bloom / Shards em **`Source/DSP/`** (módulos claros + `target_sources`). Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Testes unitários
 

@@ -28,6 +28,7 @@ Ver checklist técnico completo: [`../00-convencoes-repo-ui-testes.md`](../00-co
 
 - `SliderAttachment` / `ComboBoxAttachment` / APVTS para **tempo**, *feedback*, *mix*, modo Clean/Tape, etc., conforme [`02`](02-buffer-circular-delay.md)–[`04`](04-modos-clean-tape.md).
 - Manter o mesmo padrão de **fila + `idle()`** para novos medidores ou visualizações (não voltar a `Timer` + `isShowing()` sem *pump* garantido).
+- **Modularização:** esta entrega é sobretudo **UI** (`juce::Component`, `Source/Components/`, *attachments*); novos *widgets* ali; manter núcleo DSP em **`Source/DSP/`** e o `PluginProcessor` como fachada. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Fora de escopo
 

@@ -13,6 +13,7 @@ Janelas de áudio reproduzidas **ao contrário**, com **crossfades** entre segme
 - Política de disparo: contínua vs. sincronizada ao transporte.
 - Tamanho de janela e *crossfade* (cosine / equal-power).
 - Interação com *feedback*: definir se o *loop* reverso alimenta o mesmo buffer ou buffer secundário.
+- **Modularização:** motor *reverse* em **`Source/DSP/`** + `target_sources`. Ver [`00-convencoes-repo-ui-testes.md`](../00-convencoes-repo-ui-testes.md).
 
 ## Testes unitários
 
