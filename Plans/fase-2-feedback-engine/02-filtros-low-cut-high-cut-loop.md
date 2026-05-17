@@ -1,6 +1,6 @@
 # Plano: Filtros low-cut e high-cut no loop
 
-> **ClickUp:** [Fase 2 — Feedback Engine](https://app.clickup.com/90171225448/v/l/li/901713673872) · **Entrega:** 2/3 nesta pasta  
+> **ClickUp:** [Fase 2 — Feedback Engine](https://app.clickup.com/90171225448/v/l/li/901713673872) · **Entrega:** 2/4 nesta pasta  
 > **Tarefa:** [Filtros low-cut e high-cut no loop](https://app.clickup.com/t/86e1b2fmw)  
 > **Dependências:** [`01-saturacao-soft-clipping-feedback.md`](01-saturacao-soft-clipping-feedback.md) (definir ordem saturação ↔ filtros) ou implementar em paralelo com contrato de ordem fixo  
 

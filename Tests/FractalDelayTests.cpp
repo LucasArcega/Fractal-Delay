@@ -9,9 +9,11 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <limits>
 
 #include "PluginProcessor.h"
 #include "DSP/CircularDelayBuffer.h"
+#include "DSP/DelayTempoMath.h"
 
 // --- Smoke: instância e parâmetros registrados ---
 TEST_CASE("FractalDelayAudioProcessor instantiates", "[processor]")
@@ -22,6 +24,8 @@ TEST_CASE("FractalDelayAudioProcessor instantiates", "[processor]")
     REQUIRE(processor.getAPVTS().getParameter("inputGainDb") != nullptr);
     REQUIRE(processor.getAPVTS().getParameter("outputGainDb") != nullptr);
     REQUIRE(processor.getAPVTS().getParameter("delayMs") != nullptr);
+    REQUIRE(processor.getAPVTS().getParameter("delaySyncMode") != nullptr);
+    REQUIRE(processor.getAPVTS().getParameter("delayDivision") != nullptr);
 }
 
 // --- Layout de canais suportado pelo plugin ---
@@ -170,5 +174,59 @@ TEST_CASE("ResetClearsState", "[processor]")
 
     const float v = buf.readDelayed(0, 5);
     REQUIRE(std::abs(v) < 1e-6f);
+}
+
+// --- Delay tempo / BPM (Plans fase 1 doc. 03) ---
+TEST_CASE("NumericGuardsPositiveFinite", "[processor]")
+{
+    using fractal_dsp::NumericGuards;
+    REQUIRE_FALSE(NumericGuards::isValidPositiveFinite(0.0));
+    REQUIRE_FALSE(NumericGuards::isValidPositiveFinite(-120.0));
+    REQUIRE_FALSE(NumericGuards::isValidSampleRateAndFiniteSeconds(44100.0, std::numeric_limits<double>::quiet_NaN()));
+    REQUIRE(NumericGuards::isValidPositiveFinite(120.0));
+    REQUIRE(NumericGuards::isValidSampleRateAndFiniteSeconds(44100.0, 0.5));
+}
+
+TEST_CASE("BeatsToSeconds", "[processor]")
+{
+    REQUIRE(std::abs(fractal_tempo::beatsToSeconds(1.0, 60.0) - 1.0) < 1e-9);
+    REQUIRE(std::abs(fractal_tempo::beatsToSeconds(0.5, 120.0) - 0.25) < 1e-9);
+}
+
+TEST_CASE("SubdivisionTable", "[processor]")
+{
+    REQUIRE(std::abs(fractal_tempo::beatsForDivisionIndex(2) - 1.0) < 1e-12);   // 1/4
+    REQUIRE(std::abs(fractal_tempo::beatsForDivisionIndex(3) - 0.5) < 1e-12);   // 1/8
+    REQUIRE(std::abs(fractal_tempo::beatsForDivisionIndex(10) - 0.75) < 1e-12); // 1/8 ponteado
+    REQUIRE(std::abs(fractal_tempo::beatsForDivisionIndex(15) - (1.0 / 3.0)) < 1e-12); // 1/8 tríade
+}
+
+TEST_CASE("InvalidBpmFallback", "[processor]")
+{
+    REQUIRE(std::abs(fractal_tempo::beatsToSeconds(1.0, 0.0)) < 1e-12);
+    REQUIRE(!std::isnan(fractal_tempo::beatsToSeconds(1.0, 0.0)));
+    REQUIRE(!std::isnan(fractal_tempo::beatsToSeconds(1.0, -40.0)));
+
+    constexpr int maxS = 100000;
+    const int msOnly = fractal_tempo::resolveDelaySamples(0, 100.f, 0, std::nullopt, 44100.0, maxS);
+    const int syncNoBpm = fractal_tempo::resolveDelaySamples(1, 100.f, 2, std::nullopt, 44100.0, maxS);
+    REQUIRE(msOnly == syncNoBpm);
+}
+
+TEST_CASE("PlayHeadAbsent", "[processor]")
+{
+    constexpr int maxS = 88200;
+    const int a = fractal_tempo::resolveDelaySamples(1, 250.f, 2, std::nullopt, 44100.0, maxS);
+    const int b = fractal_tempo::resolveDelaySamples(0, 250.f, 2, std::nullopt, 44100.0, maxS);
+    REQUIRE(a == b);
+}
+
+TEST_CASE("SyncQuarterNoteAt120Bpm", "[processor]")
+{
+    constexpr int maxS = 200000;
+    const std::optional<double> bpm{ 120.0 };
+    const int samples = fractal_tempo::resolveDelaySamples(1, 999.f, 2, bpm, 44100.0, maxS);
+    // 1 beat @ 120 BPM = 0,5 s → 22050 amostras a 44,1 kHz
+    REQUIRE(std::abs(samples - 22050) < 2);
 }
 
